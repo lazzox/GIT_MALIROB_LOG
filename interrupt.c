@@ -6,24 +6,117 @@
  */ 
 #include <avr/io.h>
 #include "Headers/avr_compiler.h"
-#include "Headers/adc_driver.h"
 #include "Headers/usart_driver.h"
 #include "Headers/TC_driver.h"
 #include "Headers/globals.h"
 #include "Headers/port_driver.h"
-#include "math.h"
+
+
+// signed long X_Received;
+// signed long Y_Received;
+// signed long U_Received;
+
 
 //interrupt tajmera
 ISR(TCE1_OVF_vect)	//1.5ms 
 {	
-
+	overflow_primanje++;
+	vreme_primanja++;
+	sys_time++;
+	tajmer++;
+	senzor_tajmer++;
 }
 
-ISR(TCF0_CCA_vect)
+//ISR(USARTE1_DRE_vect)
+//{
+	//USART_DataRegEmpty(&USART_E1_data);
+//}
+
+ISR(USARTE0_DRE_vect)
 {
+	USART_DataRegEmpty(&USART_E0_data);
+}
+ISR(USARTD1_DRE_vect)
+{
+	USART_DataRegEmpty(&USART_D1_data);
+}
+ISR(USARTC0_DRE_vect)
+{
+	USART_DataRegEmpty(&USART_C0_data);
 }
 
-ISR(TCF0_OVF_vect)
+ISR(USARTE1_RXC_vect)
 {
+	USART_RXComplete(&USART_E1_data);
+	receiveArray[RX_i_E1] = USART_RXBuffer_GetByte(&USART_E1_data);
+	//SendChar((char)RX_i_E1,&USART_XM);
+	//SendChar(receiveArray[RX_i_E1], &USART_XM);
+	RX_i_E1++;
+	vreme_primanja = 0;
 	
+	
+	if(RX_i_E1 > 7){ //Primljeni podaci i spremni za obradu
+		switch(receiveArray[0]){
+			case 'I':
+				if(receiveArray[7] == 'D'){
+					//parsiraj ovde sve
+					RX_i_E1 = 0;
+				}
+				break;
+				
+			case 'O': //O - OKAY FLAG (PRIMIO SAM PORUKU) 
+				if(receiveArray[7] == 'K'){
+					okay_flag = 1;
+					RX_i_E1 =0;	
+				}
+				break;
+				
+			case 'S': //TU - Kao TU SAM (STIGAO SAM)
+				if(receiveArray[7] == 'T'){
+					if (stigao_flag2) stigao_flag = 1;
+					RX_i_E1 = 0;
+				}
+				break;
+				
+// 			case 'P': //A______X
+// 				if(receiveArray[7] == 'S'){ //idi u tacku primljeno!
+// 					//parsiraj ovde sve
+// 					X_Received = receiveArray[1];
+// 					X_Received <<=  8;
+// 					X_Received |= receiveArray[2];
+// 					
+// 					sendMsg(X_Received,&USART_XM);
+// 					
+// 					Y_Received = receiveArray [3];
+// 					Y_Received <<= 8;
+// 					Y_Received |= receiveArray[4];
+// 					
+// 					sendMsg(Y_Received,&USART_XM);
+// 					
+// 					U_Received = receiveArray[5] ;
+// 					U_Received <<=8;
+// 					U_Received |= receiveArray[6];
+// 					
+// 					sendMsg(U_Received,&USART_XM);
+// 					
+// 					vreme_primanja = 0;
+// 					
+// 					
+// 					RX_i_E1 = 0;
+// 					
+// 				}
+// 				else
+// 				{
+// 					RX_i_E1 = 0;
+// 				}
+// 				
+				
+				
+				
+			default:
+				break;
+			
+		}		
+	}
+
 }

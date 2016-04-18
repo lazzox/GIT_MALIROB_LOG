@@ -29,6 +29,7 @@ QUOTE := "
 ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:=
 LIB_DEP:=
+LINKER_SCRIPT_DEP:=
 
 # Every subdirectory with source files must be described here
 SUBDIRS :=  \
@@ -37,10 +38,10 @@ SUBDIRS :=  \
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../adc_driver.c \
 ../hardware.c \
 ../interrupt.c \
 ../port_driver.c \
+../taktike.c \
 ../TC_driver.c \
 ../usart_driver.c \
 ../main.c
@@ -53,50 +54,53 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-adc_driver.o \
 hardware.o \
 interrupt.o \
 port_driver.o \
+taktike.o \
 TC_driver.o \
 usart_driver.o \
 main.o
 
 OBJS_AS_ARGS +=  \
-adc_driver.o \
 hardware.o \
 interrupt.o \
 port_driver.o \
+taktike.o \
 TC_driver.o \
 usart_driver.o \
 main.o
 
 C_DEPS +=  \
-adc_driver.d \
 hardware.d \
 interrupt.d \
 port_driver.d \
+taktike.d \
 TC_driver.d \
 usart_driver.d \
 main.d
 
 C_DEPS_AS_ARGS +=  \
-adc_driver.d \
 hardware.d \
 interrupt.d \
 port_driver.d \
+taktike.d \
 TC_driver.d \
 usart_driver.d \
 main.d
 
-OUTPUT_FILE_PATH +=AXIS_XDRIVE_MALIROB_LOG.elf
+OUTPUT_FILE_PATH +=AXIS_VELIROB_LOG7.elf
 
-OUTPUT_FILE_PATH_AS_ARGS +=AXIS_XDRIVE_MALIROB_LOG.elf
+OUTPUT_FILE_PATH_AS_ARGS +=AXIS_VELIROB_LOG7.elf
 
 ADDITIONAL_DEPENDENCIES:=
 
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 LIB_DEP+= 
+
+LINKER_SCRIPT_DEP+= 
+
 
 # AVR32/GNU C Compiler
 
@@ -116,8 +120,8 @@ LIB_DEP+=
 
 ./%.o: .././%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 3.4.2
-	$(QUOTE)D:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -funsigned-char -funsigned-bitfields -DDEBUG  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega128a1 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<"
+	@echo Invoking: AVR/GNU C Compiler : 4.9.2
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.0.38\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega128a1 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.0.38\gcc\dev\atxmega128a1" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
@@ -143,16 +147,16 @@ endif
 # All Target
 all: $(OUTPUT_FILE_PATH) $(ADDITIONAL_DEPENDENCIES)
 
-$(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP)
+$(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER_SCRIPT_DEP)
 	@echo Building target: $@
-	@echo Invoking: AVR/GNU Linker : 3.4.2
-	$(QUOTE)D:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="AXIS_XDRIVE_MALIROB_LOG.map" -Wl,--start-group -Wl,-lm  -Wl,--end-group -Wl,--gc-sections -mrelax -mmcu=atxmega128a1 
+	@echo Invoking: AVR/GNU Linker : 4.9.2
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="AXIS_VELIROB_LOG7.map" -Wl,--start-group -Wl,-lm  -Wl,--end-group -Wl,--gc-sections -mrelax -mmcu=atxmega128a1 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.0.38\gcc\dev\atxmega128a1"  
 	@echo Finished building target: $@
-	"D:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature  "AXIS_XDRIVE_MALIROB_LOG.elf" "AXIS_XDRIVE_MALIROB_LOG.hex"
-	"D:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "AXIS_XDRIVE_MALIROB_LOG.elf" "AXIS_XDRIVE_MALIROB_LOG.eep" || exit 0
-	"D:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "AXIS_XDRIVE_MALIROB_LOG.elf" > "AXIS_XDRIVE_MALIROB_LOG.lss"
-	"D:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature  "AXIS_XDRIVE_MALIROB_LOG.elf" "AXIS_XDRIVE_MALIROB_LOG.srec"
-	"D:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.2.1002\avr8-gnu-toolchain\bin\avr-size.exe" "AXIS_XDRIVE_MALIROB_LOG.elf"
+	"C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "AXIS_VELIROB_LOG7.elf" "AXIS_VELIROB_LOG7.hex"
+	"C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "AXIS_VELIROB_LOG7.elf" "AXIS_VELIROB_LOG7.eep" || exit 0
+	"C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "AXIS_VELIROB_LOG7.elf" > "AXIS_VELIROB_LOG7.lss"
+	"C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "AXIS_VELIROB_LOG7.elf" "AXIS_VELIROB_LOG7.srec"
+	"C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-size.exe" "AXIS_VELIROB_LOG7.elf"
 	
 	
 
@@ -164,5 +168,5 @@ $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP)
 clean:
 	-$(RM) $(OBJS_AS_ARGS) $(EXECUTABLES)  
 	-$(RM) $(C_DEPS_AS_ARGS)   
-	rm -rf "AXIS_XDRIVE_MALIROB_LOG.elf" "AXIS_XDRIVE_MALIROB_LOG.a" "AXIS_XDRIVE_MALIROB_LOG.hex" "AXIS_XDRIVE_MALIROB_LOG.lss" "AXIS_XDRIVE_MALIROB_LOG.eep" "AXIS_XDRIVE_MALIROB_LOG.map" "AXIS_XDRIVE_MALIROB_LOG.srec"
+	rm -rf "AXIS_VELIROB_LOG7.elf" "AXIS_VELIROB_LOG7.a" "AXIS_VELIROB_LOG7.hex" "AXIS_VELIROB_LOG7.lss" "AXIS_VELIROB_LOG7.eep" "AXIS_VELIROB_LOG7.map" "AXIS_VELIROB_LOG7.srec" "AXIS_VELIROB_LOG7.usersignatures"
 	

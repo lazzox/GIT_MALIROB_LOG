@@ -14,6 +14,10 @@
 //  Transmit buffer mask. 
 #define USART_TX_BUFFER_MASK ( USART_TX_BUFFER_SIZE - 1 )
 
+//Dodao ovde da ne menjam i0128a1
+#define USART_XM    (*(USART_t *) 0x08A0)  /*xMega */
+#define USART_XDRIVE    (*(USART_t *) 0x0AB0)  /* Universal Asynchronous Receiver-Transmitter E1 */
+
 
 #if ( USART_RX_BUFFER_SIZE & USART_RX_BUFFER_MASK )
 #error RX buffer size is not a power of 2
@@ -245,9 +249,31 @@ void USART_DataRegEmpty(USART_data_t * usart_data);
 void USART_NineBits_PutChar(USART_t * usart, uint16_t data);
 uint16_t USART_NineBits_GetChar(USART_t * usart);
 
-// My functions
-void sendMsg(char *poruka);
-void sendChar(char c);
-void sendChar_USB(char c);
+//promenljive
+volatile unsigned char
+sendArray[128],
+receiveArray[128],
+okay_flag,
+stigao_flag,
+stigao_flag2,
+stigao_flag_pomocni,
+senzor_korak,
+RX_i_E0,
+RX_i_E1,
+RX_i_C0;
 
+volatile unsigned int 
+vreme_primanja,
+overflow_primanje,
+sys_time,
+tajmer,
+senzor_tajmer,
+TIMED_OUT_VREME,
+korak,
+korak2;
+
+void SendChar(char c, USART_t * USART);
+void sendMsg(char *poruka, USART_t * usartic);
+void idi_pravo_HC(unsigned int x, unsigned int y, unsigned int ugao);
+	
 #endif
