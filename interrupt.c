@@ -12,9 +12,7 @@
 #include "Headers/port_driver.h"
 
 
-// signed long X_Received;
-// signed long Y_Received;
-// signed long U_Received;
+
 
 
 //interrupt tajmera
@@ -50,7 +48,7 @@ ISR(USARTE1_RXC_vect)
 	USART_RXComplete(&USART_E1_data);
 	receiveArray[RX_i_E1] = USART_RXBuffer_GetByte(&USART_E1_data);
 	//SendChar((char)RX_i_E1,&USART_XM);
-	//SendChar(receiveArray[RX_i_E1], &USART_XM);
+	SendChar(receiveArray[RX_i_E1], &USARTD1);
 	RX_i_E1++;
 	vreme_primanja = 0;
 	
@@ -72,51 +70,19 @@ ISR(USARTE1_RXC_vect)
 				break;
 				
 			case 'S': //TU - Kao TU SAM (STIGAO SAM)
-				if(receiveArray[7] == 'T'){
+				if(receiveArray[7] == 'T')
+				{
 					if (stigao_flag2) stigao_flag = 1;
 					RX_i_E1 = 0;
+					
 				}
 				break;
-				
-// 			case 'P': //A______X
-// 				if(receiveArray[7] == 'S'){ //idi u tacku primljeno!
-// 					//parsiraj ovde sve
-// 					X_Received = receiveArray[1];
-// 					X_Received <<=  8;
-// 					X_Received |= receiveArray[2];
-// 					
-// 					sendMsg(X_Received,&USART_XM);
-// 					
-// 					Y_Received = receiveArray [3];
-// 					Y_Received <<= 8;
-// 					Y_Received |= receiveArray[4];
-// 					
-// 					sendMsg(Y_Received,&USART_XM);
-// 					
-// 					U_Received = receiveArray[5] ;
-// 					U_Received <<=8;
-// 					U_Received |= receiveArray[6];
-// 					
-// 					sendMsg(U_Received,&USART_XM);
-// 					
-// 					vreme_primanja = 0;
-// 					
-// 					
-// 					RX_i_E1 = 0;
-// 					
-// 				}
-// 				else
-// 				{
-// 					RX_i_E1 = 0;
-// 				}
-// 				
-				
-				
 				
 			default:
 				break;
 			
-		}		
+		}	
+		
 	}
 
 }
