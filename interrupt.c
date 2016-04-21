@@ -23,7 +23,7 @@ ISR(TCE1_OVF_vect)	//1.5ms
 	sys_time++;
 	tajmer++;
 	senzor_tajmer++;
-	vreme_cekanja;
+	vreme_cekanja++;
 }
 
 //ISR(USARTE1_DRE_vect)

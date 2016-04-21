@@ -38,7 +38,9 @@ volatile unsigned int
 senzor_tajmer,
 vreme_cekanja,
 korak,
-korak2;
+korak2,
+korak_pom,
+korak_reg;
 
 
 #endif /* TAKTIKE_H_ */

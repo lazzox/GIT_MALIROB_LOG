@@ -52,10 +52,14 @@ overflow_primanje,
 sys_time,
 tajmer,
 senzor_tajmer,
+
+
 vreme_cekanja,
 TIMED_OUT_VREME,
 korak,
-korak2;
+korak2,
+korak_pom,
+korak_reg;
 
 							
 #endif /* GLOBALS_H_ */

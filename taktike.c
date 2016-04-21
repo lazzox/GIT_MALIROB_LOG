@@ -98,7 +98,6 @@ void idi_pravo(signed int x, signed int y, signed int ugao)
 		case 1:
 			if(okay_flag){
 				stigao_flag2 = 1;
-				sendMsg("okey",&USART_XM);
 				korak2 = 2;
 				okay_flag = 0;
 				overflow_primanje = 0;
@@ -107,8 +106,6 @@ void idi_pravo(signed int x, signed int y, signed int ugao)
 			{
 				overflow_primanje = 0;
 				korak2 = 0;
-				sendMsg("OVERFLOW",&USART_XM);
-				
 			}  
 		
 		break;
@@ -125,15 +122,14 @@ void idi_pravo(signed int x, signed int y, signed int ugao)
 		}
 		else if(stigao_flag){
 				stigao_flag2 = 0;
-				sendMsg("stigao",&USART_XM);
 				stigao_flag = 0;
 				korak2=4;
 			}
 				
 		break;
 		
-		
 		case 4:
+		
 		if(stigao_flag_pomocni)
 		{
 			korak2=0;
@@ -148,11 +144,7 @@ void idi_pravo(signed int x, signed int y, signed int ugao)
 			stigao_flag2=0;
 			stigao_flag-0;
 		}
-		
-		
 		break;
-		
-		
 		
 		default:
 			break;
@@ -291,7 +283,6 @@ void idi_nazad(signed int x, signed int y, signed int ugao)
 		case 1:
 		if(okay_flag){
 			stigao_flag2 = 1;
-			sendMsg("okey",&USART_XM);
 			korak2 = 2;
 			okay_flag = 0;
 			overflow_primanje = 0;
@@ -300,10 +291,7 @@ void idi_nazad(signed int x, signed int y, signed int ugao)
 		{
 			overflow_primanje = 0;
 			korak2 = 0;
-			sendMsg("OVERFLOW",&USART_XM);
-			
 		}
-		
 		break;
 		
 		case 2:
@@ -318,11 +306,9 @@ void idi_nazad(signed int x, signed int y, signed int ugao)
 		}
 		else if(stigao_flag){
 			stigao_flag2 = 0;
-			sendMsg("stigao",&USART_XM);
 			stigao_flag = 0;
 			korak2=4;
 		}
-		
 		break;
 		
 		case 4:
@@ -340,11 +326,7 @@ void idi_nazad(signed int x, signed int y, signed int ugao)
 			stigao_flag2=0;
 			stigao_flag-0;
 		}
-		
-		
 		break;
-		
-		
 		
 		default:
 		break;
@@ -392,27 +374,6 @@ void rotiraj (int ugao_rotacije)
 		
 		break;
 		
-		//case 2:
-		//if (stigao_flag_pomocni)
-		//{
-			//overflow_primanje=0;
-			//korak2=0;
-			//stigao_flag_pomocni=0;
-			//stigao_flag=0;
-			//stigao_flag2=0;
-			//
-		//}
-		//else if(stigao_flag){
-			//stigao_flag2 = 0;
-			//sendMsg("stigao",&USART_XM);
-			//stigao_flag = 0;
-			//korak2++;
-		//}
-		
-		break;
-		
-		
-		
 		default:
 		break;
 	}
@@ -443,6 +404,7 @@ void senzor_stop(void)
 	}
 	else{
 		sendMsg("CLEAN SAM",&USART_LCD);
+		tajmer=0;
 	}
 	if(flag_senzor>9)
 	{
@@ -466,10 +428,14 @@ void senzor_stop(void)
 		
 		
 		//cekaj
-		//if (vreme_cekanja>3330)
-		//{
-			//izbegavanje_rutina();
-		//}
+		if (tajmer>2000)//  && korak_pom != 0)
+		{
+			korak2=0;
+			sys_time=0;
+			tajmer=0;
+			korak=99;
+			iskljuci_senzore();
+		}
 		
 		//cekaj rutina
 		
@@ -480,41 +446,8 @@ void senzor_stop(void)
 		//nastavi
 		
 	}
-	
-
 }
 
-//void senzor_stop (void)
-//{
-	//
-	//if((senzor_prednji&&senzor_enable_prednji)||(senzor_zadnji&&senzor_enable_zadnji))
-	//{
-		//for (int i=0;i<10;i++)
-		//{
-			//if((senzor_prednji&&senzor_enable_prednji)||(senzor_zadnji&&senzor_enable_zadnji))
-			//flag_senzor++;
-		//}
-		//
-	//}
-	//if(flag_senzor>=5)
-	//{
-		//stigao_flag_pomocni=1;
-		//SendChar('S',&USART_XDRIVE);
-		//SendChar('A',&USART_XDRIVE);
-		//SendChar('B',&USART_XDRIVE);
-		//SendChar('C',&USART_XDRIVE);
-		//SendChar('D',&USART_XDRIVE);
-		//SendChar('E',&USART_XDRIVE);
-		//SendChar('F',&USART_XDRIVE);
-		//SendChar('P',&USART_XDRIVE);
-		////stigao_flag_pomocni=1;
-		////stigao_flag=0;
-		////korak2=0;
-		//flag_senzor=0;
-		////korak_detek=korak;
-		//
-	//}	
-//}
 
 void brzina (unsigned int brzinaa)
 {
@@ -661,23 +594,27 @@ void taktika_1(void)
 		if (sys_time>700)
 		{
 		//rotiraj(180);
+		iskljuci_senzore();
 		idi_pravo(700,0,0);
 		if (korak2==3)
-		{
-		korak++;
-		korak2=0;
-		sys_time=0;
-		}
+			{
+				korak++;
+				korak2=0;
+				sys_time=0;
+				tajmer=0;
+			}
 		}
 		break;
 		
 		case 2:
-		brzina(650);
+		ukljuci_senzore();
+		idi_nazad(0,0,0);
 		if (korak2==3)
 		{
 			korak++;
 			korak2=0;
 			sys_time=0;
+			tajmer=0;
 		}
 		break;
 		
@@ -685,12 +622,13 @@ void taktika_1(void)
 		if (sys_time>700)
 		{
 			//rotiraj(180);
-			idi_nazad(0,0,0);
+			idi_nazad(500,0,0);
 			if (korak2==3)
 			{
 				korak++;
 				korak2=0;
 				sys_time=0;
+				tajmer=0;
 			}
 		}
 		break;
@@ -760,16 +698,32 @@ void taktika_1(void)
 }
 
 
-
 void ljubicasta(void)
 {
 	
 	switch (korak)
 	{
+		case 99:
+		idi_nazad(0,0,0);
+		if (korak2==3)
+		{
+			korak++;
+			korak2=0;
+			sys_time=0;
+		}
+		break;
 		
+		//case 100:
+		//if (sys_time>2000)
+		//{
+			//ukljuci_senzore();
+			//
+		//}		
+		//break;
 		
 		case 0:
 		//brzina(250);
+		//ukljuci_senzore();
 		idi_pravo(600,0,0);				//guranje kockica do pozicije gde ih ostavlja
 		sendMsg("C1",&USARTD1);
 		if (korak2 == 3)
@@ -794,11 +748,11 @@ void ljubicasta(void)
 		  
 		  case 2:
 		  //brzina(250);
-		  idi_pravo(400,400,0);				//guranje kockica do pozicije gde ih ostavlja
+		  idi_pravo(400,0,0);				//guranje kockica do pozicije gde ih ostavlja
 		  sendMsg("C3",&USARTD1);
 		  if (korak2 == 3)
 		  {
-			  korak ++;
+			  korak =88;
 			  korak2 = 0;
 			  sys_time=0;
 		  }
@@ -901,8 +855,6 @@ void ljubicasta(void)
 	
 }
 
-
-
 void ljubicasta_1(void)
 {
 	
@@ -910,8 +862,8 @@ void ljubicasta_1(void)
 	{
 		case 0:
 		//brzina(250);
-		//case  za izbegavanje
-		ukljuci_senzore();
+		korak_pom=0;
+		iskljuci_senzore();
 		postavi_sistem(210,1020,90);
 		if (korak2 == 3)
 		{
@@ -925,6 +877,7 @@ void ljubicasta_1(void)
 		if (sys_time>300)
 		{
 			//brzina(350);
+			korak_pom=0;
 			idi_nazad(210,900,90);
 			if (korak2==3)
 			{
@@ -938,6 +891,8 @@ void ljubicasta_1(void)
 		case 2:
 		
 			//brzina(350);
+			ukljuci_senzore();
+			korak_pom=0;
 			idi_nazad(1000,900,180);
 			if (korak2==3)
 			{
@@ -951,6 +906,8 @@ void ljubicasta_1(void)
 		if (sys_time>300)
 		{
 			//brzina(350);
+			//korak_pom=101;
+			korak_pom=101;
 			idi_pravo(500,900,90);
 			if (korak2==3)
 			{
@@ -965,8 +922,9 @@ void ljubicasta_1(void)
 		if (sys_time>300)
 		{
 			//brzina(350);
+			//korak_pom=101;
+			korak_pom=101;
 			idi_nazad(550,250,90);
-			sendMsg("C4",&USARTD1);
 			if (korak2==3)
 			{
 				korak2=0;
@@ -1088,6 +1046,35 @@ void ljubicasta_1(void)
 		}
 		break;
 		
+		
+		
+		
+		
+		
+		
+		case 101:
+		//brzina(250);
+		//idi_pravo(500,1000,90);
+		iskljuci_senzore();
+		rotiraj(180);
+		if (korak2 == 3)
+		{
+			korak++;
+			korak2 = 0;
+			sys_time=0;
+		}
+		break;
+		
+		case 102:
+		//brzina(250);
+		ukljuci_senzore();
+		if (sys_time>3330)
+		{
+			korak2=0;
+			sys_time=0;
+			korak = korak_pom;
+		}
+		break;
 	
 	default:
 	break;
