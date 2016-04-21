@@ -52,6 +52,7 @@ overflow_primanje,
 sys_time,
 tajmer,
 senzor_tajmer,
+vreme_cekanja,
 TIMED_OUT_VREME,
 korak,
 korak2;

@@ -46,16 +46,7 @@ void Podesi_Oscilator(void)
 
 void Podesi_USART_Komunikaciju(void)
 {
-	//USART_D1 - LCD - 62500
-	//PORTD.DIR &= PIN7_bm;		//PD7 (TXD1) - izlaz
-	//PORTD.DIR  |= ~PIN6_bm;		//PD6 (RXD1) - ulaz
-	//USART_InterruptDriver_Initialize(&USART_D1_data, &USARTD1, USART_DREINTLVL_LO_gc); //Koriscenje USARTD1 i inicijalizacija buffer-a
-	//USART_Format_Set(USART_D1_data.usart, USART_CHSIZE_8BIT_gc, USART_PMODE_DISABLED_gc, false);//USARTE0, 8 Data bits, No Parity, 1 Stop bit.
-	//USART_RxdInterruptLevel_Set(USART_D1_data.usart, USART_RXCINTLVL_LO_gc); //Aktiviranje RXC interrupt-a
-	//USART_Baudrate_Set(&USARTD1, 1, 1 );  //62500
-	//USART_Rx_Enable(USART_D1_data.usart); //Ukljucivanje RX i TX
-	//USART_Tx_Enable(USART_D1_data.usart);
-	
+
 	//USART_E1 - SALJE NA XDRIVE - 56000
 	PORTE.DIR |= PIN7_bm;//PE7 (TXE1) - izlaz  
 	PORTE.DIR  &= ~PIN6_bm;	//PE6 (RXE1) - ulaz
@@ -102,8 +93,7 @@ void Podesi_USART_Komunikaciju(void)
 	USART_InterruptDriver_Initialize(&USART_D1_data, &USARTD1, USART_DREINTLVL_LO_gc);//Koriscenje USARTE0 i inicijalizacija buffer-a
 	USART_Format_Set(USART_D1_data.usart, USART_CHSIZE_8BIT_gc, USART_PMODE_DISABLED_gc, false); //USARTE0, 8 Data bits, No Parity, 1 Stop bit.
 	USART_RxdInterruptLevel_Set(USART_D1_data.usart, USART_RXCINTLVL_LO_gc); //Aktiviranje RXC interrupt-a
-	//USART_Baudrate_Set(&USARTD1, 1, 1 );//Podesavanje Baud rate	//66500  <- OVO JE ZA DISPLAY
-	USART_Baudrate_Set(&USARTD1, 107, -5 ); //ZA ftdi
+	USART_Baudrate_Set(&USARTD1, 1, 2 );//Podesavanje Baud rate	//66500  <- OVO JE ZA DISPLAY
 	USART_Rx_Enable(USART_D1_data.usart);//Ukljucivanje RX i TX
 	USART_Tx_Enable(USART_D1_data.usart);
 

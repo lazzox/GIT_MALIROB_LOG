@@ -15,8 +15,9 @@
 
 #define senzor_maska_prednji 0b00000101
 #define senzor_maska_zadnji  0b00010000
-#define senzor_prednji (PORTJ.IN & senzor_maska_prednji)
-#define senzor_zadnji (PORTJ.IN &  senzor_maska_zadnji)
+#define sensor_det (PORTJ.IN & sensor_dir)
+//#define senzor_prednji (PORTJ.IN & senzor_maska_prednji)
+//#define senzor_zadnji (PORTJ.IN &  senzor_maska_zadnji)
 
 //#define s1s (sys_time>666)
 //#define s2s (sys_time>1332)
@@ -262,7 +263,7 @@ void idi_nazad(signed int x, signed int y, signed int ugao)
 		case 0:
 		if (!stigao_flag_pomocni)
 		{
-			sensor_dir = senzor_maska_zadnji;
+			sensor_dir = senzor_maska_prednji;
 			//LOGIKA DODAJE +4000 za X, Y i +720 za ugao
 			//TO JE DA BI SE SLALI POZITIVNI BROJEVI PREKO USART-a
 			//A KASNIJE SE ODUZME DA BI SE DOBILI PRAVI BROJEVI (cak
@@ -430,17 +431,23 @@ void iskljuci_senzore(){
 void senzor_stop(void)
 {
 	
-	if(sensor_dir & sensor_enable)
+	if(sensor_det & sensor_enable)
 	{//Ako udje neki od senzora je detektovao
+		sendMsg("DETEKTOVAO SAM",&USART_LCD);
 		for (int i=0;i<11;i++)
 		{
-			if(sensor_dir)
+			if(sensor_det)
 			flag_senzor++;
 		}
 		
 	}
+	else{
+		sendMsg("CLEAN SAM",&USART_LCD);
+	}
 	if(flag_senzor>9)
 	{
+		//stop
+		
 		stigao_flag_pomocni=1;
 		SendChar('S',&USART_XDRIVE);
 		SendChar('A',&USART_XDRIVE);
@@ -450,12 +457,27 @@ void senzor_stop(void)
 		SendChar('E',&USART_XDRIVE);
 		SendChar('F',&USART_XDRIVE);
 		SendChar('P',&USART_XDRIVE);
-		
-		//stigao_flag_pomocni=1;
-		//stigao_flag=0;
-		//korak2=0;
 		flag_senzor=0;
-		//korak_detek=korak;
+		
+		//korak
+		
+		
+		//zabrana slanja
+		
+		
+		//cekaj
+		//if (vreme_cekanja>3330)
+		//{
+			//izbegavanje_rutina();
+		//}
+		
+		//cekaj rutina
+		
+		
+		//dozvola slanja
+		
+		
+		//nastavi
 		
 	}
 	
@@ -544,7 +566,7 @@ void taktika_kocka(void){
 			//{
 				//sendMsg("case 0", &USART_XM);
 				//brzina(500);
-				idi_pravo(1000,0,0);
+				idi_pravo2(500,500);
 				if (korak2 == 3)
 				{
 					sendMsg("Tacka 0234324", &USARTD1);
@@ -556,6 +578,8 @@ void taktika_kocka(void){
 			break;
 			
 			case 1:
+			if (sys_time>2000)
+			{
 				idi_nazad(0,0,0);
 				if (korak2 == 3)
 				{
@@ -564,6 +588,8 @@ void taktika_kocka(void){
 					korak2 = 0;
 					sys_time=0;
 				}
+			}
+			break;
 			
 // 			case 2:
 // 			sendMsg("case 1", &USART_XM);
@@ -632,10 +658,10 @@ void taktika_1(void)
 		break;
 		
 		case 1:
-		if (sys_time>500)
+		if (sys_time>700)
 		{
 		//rotiraj(180);
-		idi_nazad(300,0,0);
+		idi_pravo(700,0,0);
 		if (korak2==3)
 		{
 		korak++;
@@ -646,39 +672,20 @@ void taktika_1(void)
 		break;
 		
 		case 2:
-		if (sys_time>1000)
-		{
-		rotiraj(90);
-		//idi_nazad(6000,400,180);
+		brzina(650);
 		if (korak2==3)
 		{
 			korak++;
 			korak2=0;
 			sys_time=0;
-		}
-		}
-		break;
-			
-		case 3:
-		if (sys_time>1000)
-		{
-			rotiraj(180);
-		//idi_pravo(0,400,270);
-		//idi_pravo(600,0,0);
-		if (korak2==3)
-		{
-			korak++;
-			korak2=0;
-			sys_time=0;
-		}
 		}
 		break;
 		
-		case 4:
-		if (sys_time>1000)
+		case 3:
+		if (sys_time>700)
 		{
-			rotiraj(270);
-			//idi_pravo(0,0,0);
+			//rotiraj(180);
+			idi_nazad(0,0,0);
 			if (korak2==3)
 			{
 				korak++;
@@ -688,77 +695,40 @@ void taktika_1(void)
 		}
 		break;
 		
-		case 5:
-		if (sys_time>1000)
-		{
-			rotiraj(0);
-			//idi_pravo(0,0,0);
-			if (korak2==3)
-			{
-				korak=2;
-				korak2=0;
-				sys_time=0;
-			}
-		}
-		break;
-			
 		//case 2:
-		//if (sys_time>1200)
+		//if (sys_time>1000)
 		//{
-			//idi_nazad(0,0,0);
-			//if (korak2==3)
-			//{
-				//korak=66;
-				//korak2=0;
-				//sys_time=0;
-			//}
+		//rotiraj(90);
+		////idi_nazad(6000,400,180);
+		//if (korak2==3)
+		//{
+			//korak++;
+			//korak2=0;
+			//sys_time=0;
+		//}
 		//}
 		//break;
-		//
-		//case 3:
-		//if (sys_time>1200)
-		//{
-			//idi_pravo(500,0,0);
-			//if (korak2==3)
-			//{
-				//korak++;
-				//korak2=0;
-				//sys_time=0;
-			//}
-		//}
-		//break;
-		//
-		//case 4:
-		//if (sys_time>2000)
-		//{
-			//idi_nazad(0,0,0);
-			//if (korak2==3)
-			//{
-				//korak++;
-				//korak2=0;
-				//sys_time=0;
-			//}
-		//}
-		//break;
-		
-		
+			//
 		//case 3:
 		//if (sys_time>1000)
 		//{
-			//idi_pravo(0,-400,0);
-			//if (korak2==3)
-			//{
-				//korak++;
-				//korak2=0;
-				//sys_time=0;
-			//}
+			//rotiraj(180);
+		////idi_pravo(0,400,270);
+		////idi_pravo(600,0,0);
+		//if (korak2==3)
+		//{
+			//korak++;
+			//korak2=0;
+			//sys_time=0;
+		//}
 		//}
 		//break;
 		//
 		//case 4:
 		//if (sys_time>1000)
 		//{
-			//idi_pravo(0,0,0);
+			//rotiraj(270);
+			////idi_pravo(0,0,0);
 			//if (korak2==3)
 			//{
 				//korak++;
@@ -767,7 +737,22 @@ void taktika_1(void)
 			//}
 		//}
 		//break;
-
+		//
+		//case 5:
+		//if (sys_time>1000)
+		//{
+			//rotiraj(0);
+			////idi_pravo(0,0,0);
+			//if (korak2==3)
+			//{
+				//korak=2;
+				//korak2=0;
+				//sys_time=0;
+			//}
+		//}
+		//break;
+			
+		
 		default:
 		break;
 	}
@@ -781,31 +766,12 @@ void ljubicasta(void)
 	
 	switch (korak)
 	{
+		
+		
 		case 0:
-			//brzina(250);
-			postavi_sistem(210,1020,90);
-			if (korak2 == 3)
-			{
-				korak++;
-				korak2 = 0;
-				sys_time=0;
-			}
-		break;
-		
-		case 1:
-			//brzina(250);
-			idi_nazad(210,900,0);			//prva tacka da se namesti u pravcu kocikica 1
-			if (korak2 == 3)
-				{
-					korak ++;
-					korak2 = 0;
-					sys_time=0;
-				}
-		break;
-		
-		case 2:
 		//brzina(250);
-		idi_nazad(1000,900,180);				//guranje kockica do pozicije gde ih ostavlja
+		idi_pravo(600,0,0);				//guranje kockica do pozicije gde ih ostavlja
+		sendMsg("C1",&USARTD1);
 		if (korak2 == 3)
 		{
 			korak ++;
@@ -814,9 +780,10 @@ void ljubicasta(void)
 		}
 		break;
 		
-  		case 3:
+  		case 1:
   			//brzina(250);
-  			idi_pravo(500,900,90);				//izvlacenje roboba da ide ka vratima
+  			idi_nazad(0,0,0);				//izvlacenje roboba da ide ka vratima
+  			sendMsg("C2",&USARTD1);
   			if (korak2 == 3)
   			{
   				korak ++;
@@ -824,6 +791,30 @@ void ljubicasta(void)
   				sys_time=0;
   			}
   		break;
+		  
+		  case 2:
+		  //brzina(250);
+		  idi_pravo(400,400,0);				//guranje kockica do pozicije gde ih ostavlja
+		  sendMsg("C3",&USARTD1);
+		  if (korak2 == 3)
+		  {
+			  korak ++;
+			  korak2 = 0;
+			  sys_time=0;
+		  }
+		  break;
+		  
+		  case 3:
+		  //brzina(250);
+		  idi_nazad(0,0,0);				//izvlacenje roboba da ide ka vratima
+		  sendMsg("C4",&USARTD1);
+		  if (korak2 == 3)
+		  {
+			  korak =1;
+			  korak2 = 0;
+			  sys_time=0;
+		  }
+		  break;
 		  
 		  case 4:
 			  idi_nazad(550,200,90);			//prilazak vratima
@@ -919,6 +910,8 @@ void ljubicasta_1(void)
 	{
 		case 0:
 		//brzina(250);
+		//case  za izbegavanje
+		ukljuci_senzore();
 		postavi_sistem(210,1020,90);
 		if (korak2 == 3)
 		{
@@ -928,126 +921,176 @@ void ljubicasta_1(void)
 		}
 		break;
 		
-		//case 1:
-		//if (sys_time>1000)
-		//{
-			//
-		//}
-		
 		case 1:
-		//brzina(250);
-		idi_nazad(210,900,0);			//prva tacka da se namesti u pravcu kocikica 1
-		if (korak2 == 3)
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_nazad(210,900,90);
+			if (korak2==3)
+			{
+				korak++;
+				korak2=0;
+				sys_time=0;
+			}
 		}
 		break;
 		
 		case 2:
-		//brzina(250);
-		idi_nazad(1000,900,180);				//guranje kockica do pozicije gde ih ostavlja
-		if (korak2 == 3)
-		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
-		}
-		break;
+		
+			//brzina(350);
+			idi_nazad(1000,900,180);
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
+			break;
 		
 		case 3:
-		//brzina(250);
-		idi_pravo(500,900,90);				//izvlacenje roboba da ide ka vratima
-		if (korak2 == 3)
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_pravo(500,900,90);
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
 		}
 		break;
 		
 		case 4:
-		idi_nazad(550,200,90);			//prilazak vratima
-		if (korak2 == 3)
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_nazad(550,250,90);
+			sendMsg("C4",&USARTD1);
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
 		}
 		break;
 		
 		case 5:
-		//brzina(150);
-		idi_nazad(550,0,90);					//udaranje vrata
-		if (korak2 == 3)
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_nazad(550,100,90);	
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
 		}
 		break;
 		
 		case 6:
-		//brzina(250);
-		idi_pravo(400,150,90);				//izvlacenje ispred vrata
-		if (korak2 == 3)
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_pravo(300,350,90);	
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
 		}
 		break;
+		
 		case 7:
-		// brzina(150);
-		idi_pravo(300,0,90);				//udaranje drugih vrata ako moze pod tim uglom
-		if (korak2 == 3)
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_nazad(300,100,90);	
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
 		}
 		break;
+		
 		case 8:
-		// brzina(150);
-		idi_pravo(200,1250,90);				//skoljka prva treba da se smakne malo da upadne u rupu, kada se testira
-		if (korak2 == 3)
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_pravo(700,1700,90);	
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
 		}
 		break;
 		
-		
-		//treba da se stavi servo da zatvori
-		
-		case 9:								//skoljka druga treba da se smakne malo da upadne u rupu, kada se testira
-		// brzina(150);
-		idi_nazad(300,1500,90);
-		if (korak2 == 3)
+		case 9:
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_pravo(300,1650,180);
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
 		}
 		break;
-		
-		//treba da se stavi servo da zatvori
 		
 		case 10:
-		// brzina(150);
-		idi_nazad(300,0,90);
-		if (korak2 == 3)
+		if (sys_time>300)
 		{
-			korak ++;
-			korak2 = 0;
-			sys_time=0;
+			//brzina(350);
+			idi_pravo(180,1550,270);
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
 		}
 		break;
 		
-		default:
+		case 11:
+		if (sys_time>300)
+		{
+			//brzina(350);
+			idi_pravo(200,900,270);
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
+		}
 		break;
+		
+		case 12:
+		if (sys_time>300)
+		{
+			//brzina(350);
+			idi_nazad(200,1500,90);
+			if (korak2==3)
+			{
+				korak2=0;
+				korak++;
+				sys_time=0;
+			}
+		}
+		break;
+		
+	
+	default:
+	break;
 	}
 	
 }

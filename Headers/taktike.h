@@ -36,6 +36,7 @@ senzor_enable_zadnji;
 
 volatile unsigned int 
 senzor_tajmer,
+vreme_cekanja,
 korak,
 korak2;
 

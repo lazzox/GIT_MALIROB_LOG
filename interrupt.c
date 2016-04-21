@@ -23,6 +23,7 @@ ISR(TCE1_OVF_vect)	//1.5ms
 	sys_time++;
 	tajmer++;
 	senzor_tajmer++;
+	vreme_cekanja;
 }
 
 //ISR(USARTE1_DRE_vect)
@@ -48,7 +49,7 @@ ISR(USARTE1_RXC_vect)
 	USART_RXComplete(&USART_E1_data);
 	receiveArray[RX_i_E1] = USART_RXBuffer_GetByte(&USART_E1_data);
 	//SendChar((char)RX_i_E1,&USART_XM);
-	SendChar(receiveArray[RX_i_E1], &USARTD1);
+	//SendChar(receiveArray[RX_i_E1], &USARTD1);
 	RX_i_E1++;
 	vreme_primanja = 0;
 	
