@@ -52,14 +52,14 @@ int main(void)
 			RX_i_E1 = 0;
 		}
 
- 	if (senzor_tajmer>150)
- 	{
-	 	senzor_stop();
-	 	senzor_tajmer=0;
- 	}
+ 	//if (senzor_tajmer>100)
+ 	//{
+	 	//senzor_stop();
+	 	//senzor_tajmer=0;
+ 	//}
  		
 		//taktika_kocka();
-		//taktika_1();
+		//taktika_1();		//za pid
 		ljubicasta();
 		
 		

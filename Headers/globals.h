@@ -31,7 +31,13 @@ RX_i_C0,
 stigao_flag,
 stigao_flag2,
 stigao_flag_pomocni,
+
+//SENZORI
 flag_senzor,
+senzor_enable_prednji,
+senzor_enable_zadnji,
+sensor_dir,
+sensor_enable,
 
 //KOMUNIKACIJA
 adresa_long,
@@ -48,9 +54,7 @@ tajmer,
 senzor_tajmer,
 TIMED_OUT_VREME,
 korak,
-korak_detek,
-korak2,
-senzor_enable_prednji,
-senzor_enable_zadnji;
+korak2;
+
 							
 #endif /* GLOBALS_H_ */
